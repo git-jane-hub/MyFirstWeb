@@ -11,6 +11,10 @@ public class P01BoardVO {
 	private Timestamp bDate;
 	private int bHit;
 	
+	public P01BoardVO() {
+		
+	}
+	
 	public P01BoardVO(int bId, String bName, String bTitle, String bContent, Timestamp bDate, int bHit) {
 		super();
 		this.bId = bId;

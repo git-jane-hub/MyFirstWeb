@@ -3,12 +3,18 @@ package kr.co.ictedu;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import kr.co.ictedu.board.service.P01IBoardService;
+import kr.co.ictedu.board.service.P02BoardWriteService;
+import kr.co.ictedu.board.service.P03BoardListService;
+import kr.co.ictedu.board.service.P04BoardDetailService;
 
 /**
  * Servlet implementation class P03PatternServlet
@@ -58,6 +64,10 @@ public class P03PatternServlet extends HttpServlet {
 	
 	// 요청 메서드 (get, post) 상관없이 처리하려한다면 메서들 하나를 더 생성 
 	protected void doRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
+		// 서비스 호출을 위해 모든 서비스 데이터 타입을 받을 수 있는 인터페이스 생성
+		P01IBoardService sv = null;
+		// 해당 로직을 실행한 뒤에 이동할 .jsp 파일 지정
+		String ui = null;
 		// doGet 에 있는 모든 코드를 가져옴
 		// 확장자 패턴에서 확장자를 포함한 주소 값을 가져오기 위해 아래 코드를 사용 
 		String uri = request.getRequestURI();
@@ -71,26 +81,45 @@ public class P03PatternServlet extends HttpServlet {
 		PrintWriter out = response.getWriter();
 		
 		// 회원 관련 
-		if(uri.equals("/MyFirstWeb/join.do")) {
+		if(uri.equals("/MyFirstWeb/join.do")) {					// 회원가입
 			System.out.println("회원가입 요청 확인");
-		}else if(uri.equals("/MyFirstWeb/login.do")){
+		}else if(uri.equals("/MyFirstWeb/login.do")){			// 로그인
 			System.out.println("로그인 요청 확인");
-		}else if(uri.equals("/MyFirstWeb/update.do")){
+		}else if(uri.equals("/MyFirstWeb/userupdate.do")){		// 회원 정보 수정
 			System.out.println("수정 요청 확인");
-		}else if(uri.equals("/MyFirstWeb/delete.do")){
+		}else if(uri.equals("/MyFirstWeb/userdelete.do")){		// 회원 탈퇴
 			System.out.println("탈퇴 요청 확인");
 		// 게시글 관련 
-		}else if(uri.equals("/MyFirstWeb/write.do")) {
-			System.out.println("글 작성 창으로 이동합니다.");
-		}else if(uri.equals("/MyFirstWeb/update.do")) {
+		}else if(uri.equals("/MyFirstWeb/boardwrite.do")) {		// 글 작성
+			// 글쓰기에 필요한 로직을 호출하도록 서비스를 생성
+			sv = new P02BoardWriteService();
+			// 생성한 객체의 execute을 호출하면 복잡한 서비스 로직을 처리 가능
+			sv.execute(request, response);
+			// 경로 저장 시 /는 WebContent 폴더가 기본으로 작성되어 있음
+			ui = "/board/P02Board_list.jsp";
+			// 경로를 저장한 후에는 페이지 강제이동(forward) 수행
+		}else if(uri.equals("/MyFirstWeb/boarddetail.do")) {	// 글 본문 조회
+			sv = new P04BoardDetailService();
+			sv.execute(request, response);
+			ui = "/board/P03Board_detail.jsp";
+		}else if(uri.equals("/MyFirstWeb/boardupdate.do")) {	// 글 수정
 			System.out.println("글 수정 창으로 이동합니다.");
-		}else if(uri.equals("/MyFirstWeb/wDelete.do")) {	// 탈퇴와 중복되어 변경 
+		}else if(uri.equals("/MyFirstWeb/boarddelete.do")) {	// 글 삭제
 			System.out.println("글 삭제 창으로 이동합니다.");
-		}else if(uri.equals("/MyFirstWeb/select.do")) {
-			System.out.println("글 조회 창으로 이동합니다.");
+		}else if(uri.equals("/MyFirstWeb/boardselect.do")) {	// 글 조회
+			sv = new P03BoardListService();
+			sv.execute(request, response);
+			ui = "/board/P02Board_list.jsp";
 		}else {
 			// 콘솔창이 아닌 jsp 페이지에 출력 
 			out.println("잘못된 패턴입니다.");
 		}
+		/* 포워드 로직은 조건문이 모두 작동하고 나서 실행
+		 * RequestDispatcher를 사용해 포워딩하면 request, response 및 자료를 jsp페이지에 전달 가능
+		 * Model2 방식은 스크립트릿을 작성하지 않기 때문에 controller에 출력이 필요한 데이터를 받고
+		 * 포워드로 .jsp에 전달
+		 */
+		RequestDispatcher dp = request.getRequestDispatcher(ui);
+		dp.forward(request, response);
 	}
 }
