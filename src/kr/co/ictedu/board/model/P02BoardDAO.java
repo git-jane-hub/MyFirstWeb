@@ -152,4 +152,77 @@ public class P02BoardDAO {
 		}
 		return board;
 	}// end getBoardDetail
+	
+	public int boardDelete(String bId) {
+		// Connection, PreparedStatement 객체 선언
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		
+		int result;
+		/* 구문 작성 시 bId는 auto_increment이므로 작성하지 않아도 됨
+		 * bName, bTitle, bContent는 폼에서 작성된 내용을 입력
+		 * bDate는 자동으로 현재 서버시간입력 - now()(오라클에서는 sysdate)
+		 * bHit은 자동으로 0입력
+		 */
+		try {
+			con = ds.getConnection();
+			String sql = "DELETE FROM jspboard WHERE bId = ?";
+			pstmt = con.prepareStatement(sql);
+			pstmt.setString(1, bId);
+			pstmt.executeUpdate();
+			result = 1;
+		}catch(Exception e){
+			System.out.println("에러: " + e);
+			result = 0;
+		}finally{
+			try{
+				if(con != null && !con.isClosed()){
+					con.close();
+				}
+				if(pstmt != null && !pstmt.isClosed()){
+					pstmt.close();
+				}
+			}catch(SQLException e){
+				e.printStackTrace();
+			}
+		}
+		return result;
+	}// end boardDelete()
+	
+	public int boardUpdate(P01BoardVO board) {
+		// Connection, PreparedStatement 객체 선언
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		int result;
+		/* 구문 작성 시 bId는 auto_increment이므로 작성하지 않아도 됨
+		 * bName, bTitle, bContent는 폼에서 작성된 내용을 입력
+		 * bDate는 자동으로 현재 서버시간입력 - now()(오라클에서는 sysdate)
+		 * bHit은 자동으로 0입력
+		 */
+		try {
+			con = ds.getConnection();
+			String sql = "UPDATE jspboard SET bTitle = ?, bContent = ? WHERE bId = ?";
+			pstmt = con.prepareStatement(sql);
+			pstmt.setString(1, board.getbTitle());
+			pstmt.setString(2, board.getbContent());
+			pstmt.setInt(3, board.getbId());
+			pstmt.executeUpdate();
+			result = 1;
+		}catch(Exception e){
+			System.out.println("에러: " + e);
+			result = 0;
+		}finally{
+			try{
+				if(con != null && !con.isClosed()){
+					con.close();
+				}
+				if(pstmt != null && !pstmt.isClosed()){
+					pstmt.close();
+				}
+			}catch(SQLException e){
+				e.printStackTrace();
+			}
+		}
+		return result;
+	}// end boardUpdate()
 }

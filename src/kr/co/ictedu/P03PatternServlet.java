@@ -15,6 +15,8 @@ import kr.co.ictedu.board.service.P01IBoardService;
 import kr.co.ictedu.board.service.P02BoardWriteService;
 import kr.co.ictedu.board.service.P03BoardListService;
 import kr.co.ictedu.board.service.P04BoardDetailService;
+import kr.co.ictedu.board.service.P05BoardDeleteService;
+import kr.co.ictedu.board.service.P06BoardUpdateService;
 
 /**
  * Servlet implementation class P03PatternServlet
@@ -69,7 +71,7 @@ public class P03PatternServlet extends HttpServlet {
 		// 해당 로직을 실행한 뒤에 이동할 .jsp 파일 지정
 		String ui = null;
 		// doGet 에 있는 모든 코드를 가져옴
-		// 확장자 패턴에서 확장자를 포함한 주소 값을 가져오기 위해 아래 코드를 사용 
+		// 확장자 패턴에서 확장자를 포함한 주소 값을 가져오기 위해 아래 코드를 사용 (getRequestURI는 포트번호 뒤의 내용)
 		String uri = request.getRequestURI();
 		System.out.println("uri 패턴: " + uri);
 		// 콘솔이 아닌 사용자가 확인할 수 있도록 .jsp 화면에 변수가 담긴 자료를 출력하는 out.print(); 사용을 위한 코드 준비 
@@ -96,16 +98,25 @@ public class P03PatternServlet extends HttpServlet {
 			// 생성한 객체의 execute을 호출하면 복잡한 서비스 로직을 처리 가능
 			sv.execute(request, response);
 			// 경로 저장 시 /는 WebContent 폴더가 기본으로 작성되어 있음
-			ui = "/board/P02Board_list.jsp";
+			ui = "/boardselect.do";
 			// 경로를 저장한 후에는 페이지 강제이동(forward) 수행
 		}else if(uri.equals("/MyFirstWeb/boarddetail.do")) {	// 글 본문 조회
 			sv = new P04BoardDetailService();
 			sv.execute(request, response);
 			ui = "/board/P03Board_detail.jsp";
-		}else if(uri.equals("/MyFirstWeb/boardupdate.do")) {	// 글 수정
-			System.out.println("글 수정 창으로 이동합니다.");
+		}else if(uri.equals("/MyFirstWeb/boardupdate.do")) {	// 글 수정을 위한 조회 
+			// BoardDetailService 객체가 글 정보를 가져오기 때문에 해당 객체를 사용 
+			sv = new P04BoardDetailService();
+			sv.execute(request, response);
+			ui = "/board/P04Board_update_form.jsp";
+		}else if(uri.equals("/MyFirstWeb/boardupdateok.do")) {	// 글 수정 완료
+			sv = new P06BoardUpdateService();
+			sv.execute(request, response);
+			ui = "/boarddetail.do";
 		}else if(uri.equals("/MyFirstWeb/boarddelete.do")) {	// 글 삭제
-			System.out.println("글 삭제 창으로 이동합니다.");
+			sv = new P05BoardDeleteService();
+			sv.execute(request, response);
+			ui = "/boardselect.do";
 		}else if(uri.equals("/MyFirstWeb/boardselect.do")) {	// 글 조회
 			sv = new P03BoardListService();
 			sv.execute(request, response);

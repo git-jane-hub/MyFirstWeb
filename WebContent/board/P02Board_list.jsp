@@ -24,7 +24,7 @@
 			<tr>
 				<%-- 실제로는 getter를 호출하는 것, 해당 변수의 접근제한자는  private --%>
 				<td>${board.bId }</td>
-				<td><a href = "#">${board.bTitle }</a></td>
+				<td><a href = "/MyFirstWeb/boarddetail.do?bId=${board.bId }">${board.bTitle }</a></td>
 				<td>${board.bName }</td>
 				<td>${board.bDate }</td>
 				<td>${board.bHit }</td>
@@ -32,5 +32,8 @@
 		</c:forEach>
 	</tbody>
 	</table>
+	<form action = "/MyFirstWeb/board/P01Board_write_form.jsp" >
+		<input type = "submit" value = "글 작성" />
+	</form>
 </body>
 </html>
