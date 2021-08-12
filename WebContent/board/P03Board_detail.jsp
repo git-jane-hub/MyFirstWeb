@@ -8,7 +8,7 @@
 <title>Insert title here</title>
 </head>
 <body>
-	<h1>게시글 본문</h1><hr>
+	<h2>게시글 본문</h2><hr>
 	<table border = "1"  >
 		<tr>
 			<td>글번호</td>

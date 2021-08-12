@@ -8,7 +8,7 @@
 <title>Insert title here</title>
 </head>
 <body>
-	<h1>게시글 목록</h1>
+	<h2>게시글 목록</h2><hr>
 	<table border = "1">
 	<thead>
 		<tr>
@@ -32,8 +32,11 @@
 		</c:forEach>
 	</tbody>
 	</table>
-	<form action = "/MyFirstWeb/board/P01Board_write_form.jsp" >
+	<form action = "/MyFirstWeb/boardreqwrite.do" >
 		<input type = "submit" value = "글 작성" />
+	</form>
+	<form action = "/MyFirstWeb/logout.do" method = "post">
+		<input type = "submit" value = "로그아웃" />
 	</form>
 </body>
 </html>

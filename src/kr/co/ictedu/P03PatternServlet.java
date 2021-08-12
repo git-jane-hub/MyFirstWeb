@@ -10,6 +10,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import kr.co.ictedu.board.service.P01IBoardService;
 import kr.co.ictedu.board.service.P02BoardWriteService;
@@ -17,6 +18,10 @@ import kr.co.ictedu.board.service.P03BoardListService;
 import kr.co.ictedu.board.service.P04BoardDetailService;
 import kr.co.ictedu.board.service.P05BoardDeleteService;
 import kr.co.ictedu.board.service.P06BoardUpdateService;
+import kr.co.ictedu.user.service.P01IUserService;
+import kr.co.ictedu.user.service.P02UserLoginService;
+import kr.co.ictedu.user.service.P03UserJoinService;
+import kr.co.ictedu.user.service.P04UserLogoutService;
 
 /**
  * Servlet implementation class P03PatternServlet
@@ -68,6 +73,10 @@ public class P03PatternServlet extends HttpServlet {
 	protected void doRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
 		// 서비스 호출을 위해 모든 서비스 데이터 타입을 받을 수 있는 인터페이스 생성
 		P01IBoardService sv = null;
+		P01IUserService uv = null;
+		// 로그인 확인 session을 위한 변수 생성
+		HttpSession session = null;
+		session = request.getSession();
 		// 해당 로직을 실행한 뒤에 이동할 .jsp 파일 지정
 		String ui = null;
 		// doGet 에 있는 모든 코드를 가져옴
@@ -81,17 +90,39 @@ public class P03PatternServlet extends HttpServlet {
 		response.setContentType("text/html; charset=UTF-8");
 		// out 을 통해 .jsp 화면에서 사용자가 볼 수 있도록 출력 
 		PrintWriter out = response.getWriter();
-		
 		// 회원 관련 
-		if(uri.equals("/MyFirstWeb/join.do")) {					// 회원가입
+		if(uri.equals("/MyFirstWeb/reqjoin.do")) {				// 회원가입 요청
+			System.out.println("회원가입 요청창으로");
+			// ui에서 .jsp 파일 경로로 작성해도 jsp 파일 내부에만 .jsp파일로 작성하지 않으면 uri가 주소창에 출력됨
+			ui = "/users/P02Users_join_form.jsp";
+		}else if(uri.equals("/MyFirstWeb/join.do")) {			// 회원가입
 			System.out.println("회원가입 요청 확인");
+			uv = new P03UserJoinService();
+			uv.execute(request, response);
+			ui = "/users/P01Users_login.jsp";
 		}else if(uri.equals("/MyFirstWeb/login.do")){			// 로그인
 			System.out.println("로그인 요청 확인");
+			uv = new P02UserLoginService();
+			uv.execute(request, response);
+			String loginCheck = (String)session.getAttribute("login");
+			if(loginCheck.equals("failed")) {
+				session.invalidate();
+				ui = "/users/P01Users_login.jsp";
+			}else if(loginCheck.equals("success")){	// success로 세션을 발급하지 않으면, null인지 아닌지 검사해줘야함
+				ui = "/boardselect.do";
+			}
+		}else if(uri.equals("/MyFirstWeb/logout.do")){			// 로그아웃
+			System.out.println("로그아웃 요청 확인");
+			uv = new P04UserLogoutService();
+			uv.execute(request, response);
+			ui = "/users/P01Users_login.jsp";
 		}else if(uri.equals("/MyFirstWeb/userupdate.do")){		// 회원 정보 수정
 			System.out.println("수정 요청 확인");
 		}else if(uri.equals("/MyFirstWeb/userdelete.do")){		// 회원 탈퇴
 			System.out.println("탈퇴 요청 확인");
 		// 게시글 관련 
+		}else if(uri.equals("/MyFirstWeb/boardreqwrite.do")) {	// 글 작성 요청
+			ui = "/board/P01Board_write_form.jsp";
 		}else if(uri.equals("/MyFirstWeb/boardwrite.do")) {		// 글 작성
 			// 글쓰기에 필요한 로직을 호출하도록 서비스를 생성
 			sv = new P02BoardWriteService();

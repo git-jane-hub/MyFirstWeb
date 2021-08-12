@@ -27,6 +27,10 @@ public class P02BoardDAO {
 		return dao;
 	}
 	
+	
+	
+	
+	
 	public int write(P01BoardVO board) {
 		// Connection, PreparedStatement 객체 선언
 		Connection con = null;
@@ -225,4 +229,30 @@ public class P02BoardDAO {
 		}
 		return result;
 	}// end boardUpdate()
+	
+	// 글 조회수 증가(void 리턴 타입으로 작성)
+	public void upHit(String bId) {
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		try {
+			con = ds.getConnection();
+			String sql = "UPDATE jspboard SET bHit = bHit + 1 WHERE bId = ?";
+			pstmt = con.prepareStatement(sql);
+			pstmt.setString(1, bId);
+			pstmt.executeUpdate();
+		}catch(Exception e){
+			System.out.println("에러: " + e);
+		}finally{
+			try{
+				if(con != null && !con.isClosed()){
+					con.close();
+				}
+				if(pstmt != null && !pstmt.isClosed()){
+					pstmt.close();
+				}
+			}catch(SQLException e){
+				e.printStackTrace();
+			}
+		}
+	}
 }
