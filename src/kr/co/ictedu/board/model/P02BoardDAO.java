@@ -250,9 +250,83 @@ public class P02BoardDAO {
 				if(pstmt != null && !pstmt.isClosed()){
 					pstmt.close();
 				}
-			}catch(SQLException e){
+			}catch(Exception e){
 				e.printStackTrace();
 			}
 		}
+	}// end upHit()
+	
+	public List<P01BoardVO> getPageList(int pageNum){	// P01BoardVO가 1 row의 데이터를 가져옴 - 10 row의 데이터를 가져오려면 List 사용 
+		List<P01BoardVO> boardList = new ArrayList<>();
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try {
+			con = ds.getConnection();
+			String sql = "SELECT * FROM jspboard ORDER BY bId DESC LIMIT ?, 10 ";
+			pstmt = con.prepareStatement(sql);
+			pstmt.setInt(1, (pageNum - 1) * 10);
+			rs = pstmt.executeQuery();
+			while(rs.next()) {							// 글의 전체 개수를 모르기 때문에 while로 작성 
+				int bId = rs.getInt("bId");
+				String bName = rs.getString("bName");
+				String bTitle = rs.getString("bTitle");
+				String bContent = rs.getString("bContent");
+				Timestamp bDate = rs.getTimestamp("bDate");
+				int bHit = rs.getInt("bId");
+				P01BoardVO board = new P01BoardVO(bId, bName, bTitle, bContent, bDate, bHit);
+				boardList.add(board);
+			}
+		}catch(Exception e) {
+			e.printStackTrace();
+		}finally {
+			try {
+				if(con != null && !con.isClosed()) {
+					con.close();
+				}
+				if(pstmt != null && !pstmt.isClosed()) {
+					pstmt.close();
+				}
+				if(rs != null && !rs.isClosed()) {
+					rs.close();
+				}
+			}catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return boardList;
+	}
+	
+	public int getBoardCount() {
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		int result = 0;
+		try {
+			con = ds.getConnection();
+			String sql = "SELECT count(*) FROM jspboard";
+			pstmt = con.prepareStatement(sql);
+			rs = pstmt.executeQuery();
+			if(rs.next()) { 
+				result = rs.getInt(1);
+			}
+		}catch(Exception e) {
+			e.printStackTrace();
+		}finally {
+			try {
+				if(con != null && !con.isClosed()) {
+					con.close();
+				}
+				if(pstmt != null && !pstmt.isClosed()) {
+					pstmt.close();
+				}
+				if(rs != null && !rs.isClosed()) {
+					rs.close();
+				}
+			}catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return result;
 	}
 }

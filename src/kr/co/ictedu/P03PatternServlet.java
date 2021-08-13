@@ -18,6 +18,7 @@ import kr.co.ictedu.board.service.P03BoardListService;
 import kr.co.ictedu.board.service.P04BoardDetailService;
 import kr.co.ictedu.board.service.P05BoardDeleteService;
 import kr.co.ictedu.board.service.P06BoardUpdateService;
+import kr.co.ictedu.board.service.P07BoardPagingService;
 import kr.co.ictedu.user.service.P01IUserService;
 import kr.co.ictedu.user.service.P02UserLoginService;
 import kr.co.ictedu.user.service.P03UserJoinService;
@@ -149,7 +150,12 @@ public class P03PatternServlet extends HttpServlet {
 			sv.execute(request, response);
 			ui = "/boardselect.do";
 		}else if(uri.equals("/MyFirstWeb/boardselect.do")) {	// 글 조회
-			sv = new P03BoardListService();
+			//sv = new P03BoardListService();
+			//sv.execute(request, response);
+			//ui = "/board/P02Board_list.jsp";
+			
+			// 위의 전체 게시물 가져오기를 페이징 가져오기로 대체
+			sv = new P07BoardPagingService();
 			sv.execute(request, response);
 			ui = "/board/P02Board_list.jsp";
 		}else {
